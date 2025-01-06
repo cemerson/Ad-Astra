@@ -59,13 +59,30 @@ public class SolarPanelBlockEntity extends EnergyContainerMachineBlockEntity {
         return ChargeSlotType.POWER_ITEM;
     }
 
+
+    // @Override
+    // public void serverTick(ServerLevel level, long time, BlockState state, BlockPos pos) {
+    //     if (canFunction()) {
+    //         distributeToChargeSlots();
+    //         if (isDay()) generateEnergy(PlanetApi.API.getSolarPower(level));
+    //     }
+    // }
+
+    private boolean isSpace = false;
+    private ServerLevel solarPanelsLevel = null;    
     @Override
     public void serverTick(ServerLevel level, long time, BlockState state, BlockPos pos) {
         if (canFunction()) {
-            distributeToChargeSlots();
-            if (isDay()) generateEnergy(PlanetApi.API.getSolarPower(level));
+            distributeToChargeSlots();            
+            if(solarPanelsLevel == null){
+                solarPanelsLevel = this.level(planet.dimension());
+                isSpace = PlanetApi.API.isSpace(targetLevel);                                    
+            }                        
+            if (isDay() || isSpace) {
+                generateEnergy(PlanetApi.API.getSolarPower(level));
+            }                                    
         }
-    }
+    }    
 
     @Override
     public void tickSideInteractions(BlockPos pos, Predicate<Direction> filter, List<ConfigurationEntry> sideConfig) {
